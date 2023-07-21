@@ -27,14 +27,20 @@ jobs:
         env:
           HMCL_GITHUB_TOKEN: ${{ secrets.HMCL_GITHUB_TOKEN }}
       - name: Commit changes
+        id: commit
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add -A
           if git diff-index --quiet HEAD; then
-            echo "No Changes"
+            # No changes
+            echo 'changed=false' >> $GITHUB_OUTPUT
           else
+            # Changes detected
+            echo 'changed=true' >> $GITHUB_OUTPUT
             git commit -m "[BOT] Update version json."
-            git push
           fi
-          
+      - name: Push
+        if: steps.commit.outputs.changed == 'true'
+        run: |
+          git push
