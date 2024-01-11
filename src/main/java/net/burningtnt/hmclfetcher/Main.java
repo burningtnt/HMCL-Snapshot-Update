@@ -103,7 +103,7 @@ public final class Main {
                     String fileLink = downloadLink.resolve(branch + "/" + fileName).toString();
                     update.add("jar", new JsonPrimitive(fileLink));
 
-                    try (BufferedWriter writer = Files.newBufferedWriter(root.resolve(DigestUtils.digest(fileLink) + ".json"))) {
+                    try (BufferedWriter writer = Files.newBufferedWriter(root.resolve(DigestUtils.digest(downloadLink.toString()) + "." + archiveFile.getExtension() + ".json"))) {
                         GSON.toJson(update, writer);
                     }
                 }
