@@ -1,7 +1,5 @@
 package net.burningtnt.hmclfetcher.utils;
 
-import net.burningtnt.hmclfetcher.structure.ArchiveFile;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
