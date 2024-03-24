@@ -9,6 +9,7 @@ import net.burningtnt.hmclfetcher.storage.IUploader;
 import net.burningtnt.hmclfetcher.storage.UploadRejectedException;
 import net.burningtnt.hmclfetcher.structure.ArchiveFile;
 import net.burningtnt.hmclfetcher.structure.SourceBranch;
+import net.burningtnt.hmclfetcher.uploaders.EMIUploader;
 import net.burningtnt.hmclfetcher.uploaders.GitHubPagesLocalUploader;
 import net.burningtnt.hmclfetcher.uploaders.GitHubRepositoryLocalUploader;
 import net.burningtnt.hmclfetcher.uploaders.ProxyLocalUploader;
@@ -54,6 +55,7 @@ public final class Main {
             int i = proxy.indexOf('=');
             uploader.add(new ProxyLocalUploader(storage, proxy.substring(i + 1), proxy.substring(0, i)));
         }
+        uploader.add(new EMIUploader());
         return uploader;
     }
 
