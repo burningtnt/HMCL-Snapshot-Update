@@ -74,7 +74,12 @@ public final class Main {
             Map<ArchiveFile, Path> files = new HashMap<>();
 
             long runID = GITHUB_API.getLatestWorkflowID(source.owner(), source.repository(), source.workflow(), source.branch());
-            GitHubAPI.GitHubArtifact artifact = GITHUB_API.getArtifacts(source.owner(), source.repository(), runID)[0];
+            GitHubAPI.GitHubArtifact[] artifacts = GITHUB_API.getArtifacts(source.owner(), source.repository(), runID);
+            if (artifacts.length == 0) {
+                break;
+            }
+
+            GitHubAPI.GitHubArtifact artifact = artifacts[0];
 
             try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new BufferedInputStream(GITHUB_API.getArtifactData(artifact)))) {
                 ZipArchiveEntry entry;
