@@ -20,9 +20,13 @@ public final class ChangelogManager {
     private static final String M_DRAFT = "\uD83D\uDFE5", M_NOT_MERGED = "\uD83D\uDFE8", M_PARTLY_MERGED = "\uD83D\uDFE6", M_MERGED = "\uD83D\uDFE9";
 
     public static void execute(GitHubAPI apiHandle) throws Exception {
-        StringBuilder sb = new StringBuilder("|").append(M_DRAFT).append('|').append(M_NOT_MERGED).append('|')
+        StringBuilder result = new StringBuilder("|").append(M_DRAFT).append('|').append(M_NOT_MERGED).append('|')
                 .append(M_PARTLY_MERGED).append('|').append(M_MERGED).append("|\n|----|----|----| ----|\n|Draft|Not Merged|Partly Merged|Merged|\n\n");
 
+        StringBuilder p2 = new StringBuilder();
+        int p2I = 0;
+
+        StringBuilder p3 = new StringBuilder();
         Pagination<GitHubPullRequest> pulls = apiHandle.getPullRequests(OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch());
         while (pulls.hasNext()) {
             GitHubPullRequest pull = pulls.next();
@@ -55,9 +59,17 @@ public final class ChangelogManager {
                 }
             }
 
-            sb.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
+            p2.append(state);
+            p2I++;
+            if (p2I % 8 == 0) {
+                p2.append('\n');
+            }
+
+            p3.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
         }
 
-        apiHandle.updatePullRequestBody("burningtnt", "HMCL", 9, sb.toString());
+        result.append("---\n\n").append(p2).append("\n\n---\n").append(p3);
+
+        apiHandle.updatePullRequestBody("burningtnt", "HMCL", 9, result.toString());
     }
 }
