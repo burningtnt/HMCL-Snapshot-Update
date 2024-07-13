@@ -33,11 +33,6 @@ tasks.getByName("build") {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:24.0.1")
     implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.apache.commons:commons-compress:1.24.0")
-}
-
-tasks.getByName<Test>("test") {
-    useJUnitPlatform()
+    implementation("org.apache.commons:commons-compress:1.26.0")
 }
