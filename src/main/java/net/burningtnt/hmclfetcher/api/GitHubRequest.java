@@ -2,7 +2,6 @@ package net.burningtnt.hmclfetcher.api;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import sun.misc.Unsafe;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -23,9 +22,9 @@ final class GitHubRequest {
 
         static {
             try {
-                Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+                Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
                 unsafeField.setAccessible(true);
-                Unsafe u = (Unsafe) unsafeField.get(null);
+                sun.misc.Unsafe u = (sun.misc.Unsafe) unsafeField.get(null);
 
                 HttpURLConnection.setFollowRedirects(true);
 

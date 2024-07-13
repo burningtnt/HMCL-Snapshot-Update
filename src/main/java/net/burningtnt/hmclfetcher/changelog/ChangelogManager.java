@@ -31,24 +31,28 @@ public final class ChangelogManager {
             GitHubPullRequestReference head = pull.getHead();
             GitHubRepository headRepo = head.getRepository();
 
-            GitHubCommitsCompare c1 = apiHandle.compareCommits(
-                    OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch(),
-                    headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
-            ), c2 = apiHandle.compareCommits(
+            GitHubCommitsCompare c2 = apiHandle.compareCommits(
                     PRC_SOURCE.owner(), PRC_SOURCE.repository(), PRC_SOURCE.branch(),
                     headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
             );
 
             if (c2.getAheadByCount() == 0) {
                 state = M_MERGED;
-            } else if (c1.getAheadByCount() == c2.getAheadByCount()) {
-                if (pull.isDraft()) {
-                    state = M_DRAFT;
-                } else {
-                    state = M_NOT_MERGED;
-                }
             } else {
-                state = M_PARTLY_MERGED;
+                GitHubCommitsCompare c1 = apiHandle.compareCommits(
+                        OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch(),
+                        headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
+                );
+
+                if (c1.getAheadByCount() == c2.getAheadByCount()) {
+                    if (pull.isDraft()) {
+                        state = M_DRAFT;
+                    } else {
+                        state = M_NOT_MERGED;
+                    }
+                } else {
+                    state = M_PARTLY_MERGED;
+                }
             }
 
             sb.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
