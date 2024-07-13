@@ -1,8 +1,8 @@
 package net.burningtnt.hmclfetcher.changelog;
 
 import net.burningtnt.hmclfetcher.api.GitHubAPI;
-import net.burningtnt.hmclfetcher.api.pagination.Pagination;
 import net.burningtnt.hmclfetcher.api.structure.commits.GitHubCommitsCompare;
+import net.burningtnt.hmclfetcher.api.structure.pagination.GitHubPagination;
 import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequest;
 import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequestReference;
 import net.burningtnt.hmclfetcher.api.structure.repo.GitHubRepository;
@@ -16,7 +16,6 @@ public final class ChangelogManager {
 
     private static final SourceBranch PRC_SOURCE = new SourceBranch("burningtnt", "HMCL", "prs", null);
 
-
     private static final String M_DRAFT = "\uD83D\uDFE5", M_NOT_MERGED = "\uD83D\uDFE8", M_PARTLY_MERGED = "\uD83D\uDFE6", M_MERGED = "\uD83D\uDFE9";
 
     public static void execute(GitHubAPI apiHandle) throws Exception {
@@ -27,7 +26,7 @@ public final class ChangelogManager {
         int p2I = 0;
 
         StringBuilder p3 = new StringBuilder();
-        Pagination<GitHubPullRequest> pulls = apiHandle.getPullRequests(OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch());
+        GitHubPagination<GitHubPullRequest> pulls = apiHandle.getPullRequests(OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch());
         while (pulls.hasNext()) {
             GitHubPullRequest pull = pulls.next();
 

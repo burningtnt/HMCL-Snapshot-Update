@@ -1,7 +1,7 @@
-package net.burningtnt.hmclfetcher.publish.uploaders.local;
+package net.burningtnt.hmclfetcher.publish.uploaders.impl.local;
 
 import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
-import net.burningtnt.hmclfetcher.publish.uploaders.AbstractLocalUploader;
+import net.burningtnt.hmclfetcher.publish.uploaders.impl.AbstractLocalUploader;
 
 import java.net.URI;
 import java.net.URISyntaxException;

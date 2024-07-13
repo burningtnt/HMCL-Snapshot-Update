@@ -1,4 +1,4 @@
-package net.burningtnt.hmclfetcher.publish.storage;
+package net.burningtnt.hmclfetcher.publish.uploaders;
 
 import java.io.IOException;
 import java.net.URI;

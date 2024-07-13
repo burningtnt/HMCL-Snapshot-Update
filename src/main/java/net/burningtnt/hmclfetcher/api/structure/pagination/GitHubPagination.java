@@ -1,15 +1,15 @@
-package net.burningtnt.hmclfetcher.api.pagination;
+package net.burningtnt.hmclfetcher.api.structure.pagination;
 
 import java.io.IOException;
 import java.util.Iterator;
 
-public interface Pagination<R> {
+public interface GitHubPagination<R> {
     boolean hasNext() throws IOException;
 
     R next() throws IOException;
 
-    static <R> Pagination<R> of(PaginationAccessor<R> runnable) {
-        return new Pagination<R>() {
+    static <R> GitHubPagination<R> of(GitHubPaginationAccessor<R> runnable) {
+        return new GitHubPagination<R>() {
             private static final class EmptyIterator<T> implements Iterator<T> {
                 private static final EmptyIterator<?> NOT_INITIALIZED = new EmptyIterator<>();
                 private static final EmptyIterator<?> FINISHED = new EmptyIterator<>();
@@ -25,7 +25,7 @@ public interface Pagination<R> {
                 }
             }
 
-            private final PaginationConfig config = new PaginationConfig();
+            private final GitHubPaginationConfig config = new GitHubPaginationConfig();
 
             private Iterator<R> cache;
 

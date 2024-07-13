@@ -11,10 +11,10 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-final class GitHubRequest {
+final class GitHubRequestUtils {
     static final Gson GSON = new Gson();
 
-    private GitHubRequest() {
+    private GitHubRequestUtils() {
     }
 
     enum Type {

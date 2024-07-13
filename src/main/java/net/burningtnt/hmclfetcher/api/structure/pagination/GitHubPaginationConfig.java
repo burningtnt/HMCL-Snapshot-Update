@@ -1,16 +1,16 @@
-package net.burningtnt.hmclfetcher.api.pagination;
+package net.burningtnt.hmclfetcher.api.structure.pagination;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public final class PaginationConfig {
+public final class GitHubPaginationConfig {
     public static final String PER_PAGE = "per_page", PAGE = "page";
 
     private final int perPage;
 
     private int currentPage;
 
-    PaginationConfig() {
+    GitHubPaginationConfig() {
         this.perPage = 30;
         this.currentPage = 1;
     }

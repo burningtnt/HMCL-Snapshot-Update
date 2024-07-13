@@ -2,8 +2,8 @@ package net.burningtnt.hmclfetcher.api;
 
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import net.burningtnt.hmclfetcher.api.pagination.Pagination;
 import net.burningtnt.hmclfetcher.api.structure.commits.GitHubCommitsCompare;
+import net.burningtnt.hmclfetcher.api.structure.pagination.GitHubPagination;
 import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequest;
 import net.burningtnt.hmclfetcher.api.structure.workflow.GitHubWorkflowRun;
 import net.burningtnt.hmclfetcher.api.structure.workflow.GitHubWorkflowRunLookup;
@@ -23,8 +23,8 @@ public final class GitHubAPI {
     }
 
     public long getLatestWorkflowID(String owner, String repository, String workflowID, String branch) throws IOException {
-        GitHubWorkflowRun[] runs = GitHubRequest.ofStructuredResult(
-                this, GitHubRequest.Type.GET, String.format("https://api.github.com/repos/%s/%s/actions/workflows/%s/runs", owner, repository, workflowID),
+        GitHubWorkflowRun[] runs = GitHubRequestUtils.ofStructuredResult(
+                this, GitHubRequestUtils.Type.GET, String.format("https://api.github.com/repos/%s/%s/actions/workflows/%s/runs", owner, repository, workflowID),
                 Map.of("branch", branch, "event", "push", "page", "1", "per_page", "1"),
                 GitHubWorkflowRunLookup.class
         ).getRuns();
@@ -36,22 +36,22 @@ public final class GitHubAPI {
     }
 
     public GitHubArtifact[] getArtifacts(String owner, String repository, long runID) throws IOException {
-        return GitHubRequest.ofStructuredResult(
-                this, GitHubRequest.Type.GET, String.format("https://api.github.com/repos/%s/%s/actions/runs/%s/artifacts", owner, repository, runID),
+        return GitHubRequestUtils.ofStructuredResult(
+                this, GitHubRequestUtils.Type.GET, String.format("https://api.github.com/repos/%s/%s/actions/runs/%s/artifacts", owner, repository, runID),
                 GitHubArtifactsLookup.class
         ).getArtifacts();
     }
 
     public InputStream getArtifactData(GitHubArtifact artifact) throws IOException {
-        return GitHubRequest.ofStream(this, GitHubRequest.Type.GET, artifact.getDonloadURL());
+        return GitHubRequestUtils.ofStream(this, GitHubRequestUtils.Type.GET, artifact.getDonloadURL());
     }
 
     private static final TypeToken<List<GitHubPullRequest>> GET_PULL_REQUESTS_TT = new TypeToken<>() {
     };
 
-    public Pagination<GitHubPullRequest> getPullRequests(String owner, String repository, String baseBranch) {
-        return Pagination.of(config -> GitHubRequest.ofStructuredResult(
-                this, GitHubRequest.Type.GET, String.format("https://api.github.com/repos/%s/%s/pulls", owner, repository),
+    public GitHubPagination<GitHubPullRequest> getPullRequests(String owner, String repository, String baseBranch) {
+        return GitHubPagination.of(config -> GitHubRequestUtils.ofStructuredResult(
+                this, GitHubRequestUtils.Type.GET, String.format("https://api.github.com/repos/%s/%s/pulls", owner, repository),
                 config.wrap(Map.of("state", "open", "base", baseBranch)),
                 GET_PULL_REQUESTS_TT
         ));
@@ -60,12 +60,12 @@ public final class GitHubAPI {
     public void updatePullRequestBody(String owner, String repository, int id, String body) throws IOException {
         JsonObject b = new JsonObject();
         b.addProperty("body", body);
-        GitHubRequest.ofSend(this, GitHubRequest.Type.PATCH, String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repository, id), b);
+        GitHubRequestUtils.ofSend(this, GitHubRequestUtils.Type.PATCH, String.format("https://api.github.com/repos/%s/%s/pulls/%d", owner, repository, id), b);
     }
 
     public GitHubCommitsCompare compareCommits(String baseOwner, String baseRepository, String baseCommit, String headOwner, String headRepository, String headCommit) throws IOException {
-        return GitHubRequest.ofStructuredResult(
-                this, GitHubRequest.Type.GET, String.format("https://api.github.com/repos/%s/%s/compare/%s...%s:%s:%s", baseOwner, baseRepository, baseCommit, headOwner, headRepository, headCommit),
+        return GitHubRequestUtils.ofStructuredResult(
+                this, GitHubRequestUtils.Type.GET, String.format("https://api.github.com/repos/%s/%s/compare/%s...%s:%s:%s", baseOwner, baseRepository, baseCommit, headOwner, headRepository, headCommit),
                 GitHubCommitsCompare.class
         );
     }

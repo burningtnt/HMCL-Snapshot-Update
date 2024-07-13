@@ -1,9 +1,9 @@
-package net.burningtnt.hmclfetcher.publish.uploaders;
+package net.burningtnt.hmclfetcher.publish.uploaders.impl;
 
-import net.burningtnt.hmclfetcher.publish.storage.IUploadAction;
-import net.burningtnt.hmclfetcher.publish.storage.IUploader;
 import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
+import net.burningtnt.hmclfetcher.publish.uploaders.IUploadAction;
+import net.burningtnt.hmclfetcher.publish.uploaders.IUploader;
 import net.burningtnt.hmclfetcher.utils.FileUtils;
 
 import java.io.IOException;

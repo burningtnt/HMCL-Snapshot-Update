@@ -1,4 +1,4 @@
-package net.burningtnt.hmclfetcher.publish.storage;
+package net.burningtnt.hmclfetcher.publish.uploaders;
 
 public class UploadRejectedException extends Exception {
     public UploadRejectedException() {

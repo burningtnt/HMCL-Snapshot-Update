@@ -6,15 +6,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import net.burningtnt.hmclfetcher.api.GitHubAPI;
 import net.burningtnt.hmclfetcher.api.structure.workflow.artifacts.GitHubArtifact;
-import net.burningtnt.hmclfetcher.publish.storage.IUploadAction;
-import net.burningtnt.hmclfetcher.publish.storage.IUploader;
-import net.burningtnt.hmclfetcher.publish.storage.UploadRejectedException;
 import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
-import net.burningtnt.hmclfetcher.publish.uploaders.EMIUploader;
-import net.burningtnt.hmclfetcher.publish.uploaders.local.GitHubPagesLocalUploader;
-import net.burningtnt.hmclfetcher.publish.uploaders.local.GitHubRepositoryLocalUploader;
-import net.burningtnt.hmclfetcher.publish.uploaders.local.ProxiedLocalUploader;
+import net.burningtnt.hmclfetcher.publish.uploaders.IUploadAction;
+import net.burningtnt.hmclfetcher.publish.uploaders.IUploader;
+import net.burningtnt.hmclfetcher.publish.uploaders.UploadRejectedException;
 import net.burningtnt.hmclfetcher.utils.FileUtils;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
@@ -27,7 +23,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,18 +40,6 @@ public final class UpdaterManager {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    private static List<IUploader> collectUploader(Path storage) {
-        List<IUploader> uploader = new ArrayList<>();
-        uploader.add(new GitHubPagesLocalUploader(storage));
-        uploader.add(new GitHubRepositoryLocalUploader(storage));
-        for (String proxy : System.getenv("HMCL_GITHUB_PROXYS").split(";")) {
-            int i = proxy.indexOf('=');
-            uploader.add(new ProxiedLocalUploader(storage, proxy.substring(i + 1), proxy.substring(0, i)));
-        }
-        uploader.add(new EMIUploader());
-        return uploader;
-    }
-
     public static void execute(GitHubAPI apiHandle) throws Exception {
         Path ARTIFACT_ROOT = Path.of("artifacts/" + CURRENT_BRANCH).toAbsolutePath();
         Path FILES_ROOT = ARTIFACT_ROOT.resolve("files");
@@ -65,7 +48,7 @@ public final class UpdaterManager {
 
         FileUtils.ensureDirectoryClear(ARTIFACT_ROOT);
 
-        List<IUploader> uploaderList = collectUploader(FILES_ROOT);
+        List<IUploader> uploaderList = IUploader.collectUploader(FILES_ROOT);
 
         for (SourceBranch source : GITHUB_BRANCHES) {
             Map<ArchiveFile, Path> files = new HashMap<>();
