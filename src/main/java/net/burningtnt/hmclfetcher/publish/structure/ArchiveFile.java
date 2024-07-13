@@ -1,4 +1,4 @@
-package net.burningtnt.hmclfetcher.structure;
+package net.burningtnt.hmclfetcher.publish.structure;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +16,7 @@ public final class ArchiveFile {
     }
 
     public static Map<String, ArchiveFile> of(String... extension) {
-        return Collections.unmodifiableMap(Arrays.stream(extension).collect(Collectors.toMap(Function.identity(), ArchiveFile:: new)));
+        return Collections.unmodifiableMap(Arrays.stream(extension).collect(Collectors.toMap(Function.identity(), ArchiveFile::new)));
     }
 
     public String getExtension() {

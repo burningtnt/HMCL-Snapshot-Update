@@ -1,9 +1,9 @@
-package net.burningtnt.hmclfetcher.uploaders;
+package net.burningtnt.hmclfetcher.publish.uploaders;
 
-import net.burningtnt.hmclfetcher.storage.IUploadAction;
-import net.burningtnt.hmclfetcher.storage.IUploader;
-import net.burningtnt.hmclfetcher.structure.ArchiveFile;
-import net.burningtnt.hmclfetcher.structure.SourceBranch;
+import net.burningtnt.hmclfetcher.publish.storage.IUploadAction;
+import net.burningtnt.hmclfetcher.publish.storage.IUploader;
+import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
+import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
 
 import java.net.URI;
 import java.net.URISyntaxException;

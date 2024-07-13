@@ -1,7 +1,7 @@
-package net.burningtnt.hmclfetcher.storage;
+package net.burningtnt.hmclfetcher.publish.storage;
 
-import net.burningtnt.hmclfetcher.structure.ArchiveFile;
-import net.burningtnt.hmclfetcher.structure.SourceBranch;
+import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
+import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
 
 import java.io.IOException;
 import java.nio.file.Path;
