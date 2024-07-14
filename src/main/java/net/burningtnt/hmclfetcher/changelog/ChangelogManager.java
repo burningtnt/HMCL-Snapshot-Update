@@ -7,6 +7,12 @@ import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequest;
 import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequestReference;
 import net.burningtnt.hmclfetcher.api.structure.repo.GitHubRepository;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
+import org.apache.commons.io.output.StringBuilderWriter;
+
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public final class ChangelogManager {
     private ChangelogManager() {
@@ -19,9 +25,6 @@ public final class ChangelogManager {
     private static final String M_DRAFT = "\uD83D\uDFE5", M_NOT_MERGED = "\uD83D\uDFE8", M_PARTLY_MERGED = "\uD83D\uDFE6", M_MERGED = "\uD83D\uDFE9";
 
     public static void execute(GitHubAPI apiHandle) throws Exception {
-        StringBuilder result = new StringBuilder("|").append(M_DRAFT).append('|').append(M_NOT_MERGED).append('|')
-                .append(M_PARTLY_MERGED).append('|').append(M_MERGED).append("|\n|----|----|----| ----|\n|Draft|Not Merged|Partly Merged|Merged|\n\n");
-
         StringBuilder p2 = new StringBuilder();
         int p2I = 0;
 
@@ -60,15 +63,20 @@ public final class ChangelogManager {
 
             p2.append(state);
             p2I++;
-            if (p2I % 8 == 0) {
+            if (p2I % 16 == 0) {
                 p2.append('\n');
             }
 
             p3.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
         }
 
-        result.append("---\n\n").append(p2).append("\n\n---\n").append(p3);
+        StringBuilderWriter result = new StringBuilderWriter();
+        try (Reader reader = new InputStreamReader(Objects.requireNonNull(
+                ChangelogManager.class.getResourceAsStream("/changelog.template.md")
+        ), StandardCharsets.UTF_8)) {
+            reader.transferTo(result);
+        }
 
-        apiHandle.updatePullRequestBody("burningtnt", "HMCL", 9, result.toString());
+        apiHandle.updatePullRequestBody("burningtnt", "HMCL", 9, String.format(result.toString(), M_DRAFT, M_NOT_MERGED, M_PARTLY_MERGED, M_MERGED, p2, p3));
     }
 }
