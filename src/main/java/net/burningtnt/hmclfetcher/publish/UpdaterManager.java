@@ -12,8 +12,6 @@ import net.burningtnt.hmclfetcher.publish.uploaders.IUploadAction;
 import net.burningtnt.hmclfetcher.publish.uploaders.IUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.UploadRejectedException;
 import net.burningtnt.hmclfetcher.utils.FileUtils;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 
 import java.io.BufferedInputStream;
 import java.io.OutputStream;
@@ -26,6 +24,8 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public final class UpdaterManager {
     private UpdaterManager() {
@@ -60,9 +60,8 @@ public final class UpdaterManager {
             }
 
             GitHubArtifact artifact = artifacts[0];
-
-            try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new BufferedInputStream(apiHandle.getArtifactData(artifact)))) {
-                ZipArchiveEntry entry;
+            try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(apiHandle.getArtifactData(artifact)))) {
+                ZipEntry entry;
                 while ((entry = zis.getNextEntry()) != null) {
                     String entryPath = entry.getName();
                     if (entryPath.endsWith(".sha1")) {

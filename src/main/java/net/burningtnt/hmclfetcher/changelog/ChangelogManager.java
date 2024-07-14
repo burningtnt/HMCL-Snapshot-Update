@@ -7,10 +7,10 @@ import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequest;
 import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequestReference;
 import net.burningtnt.hmclfetcher.api.structure.repo.GitHubRepository;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
-import org.apache.commons.io.output.StringBuilderWriter;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -70,7 +70,7 @@ public final class ChangelogManager {
             p3.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
         }
 
-        StringBuilderWriter result = new StringBuilderWriter();
+        StringWriter result = new StringWriter();
         try (Reader reader = new InputStreamReader(Objects.requireNonNull(
                 ChangelogManager.class.getResourceAsStream("/changelog.template.md")
         ), StandardCharsets.UTF_8)) {
