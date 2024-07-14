@@ -20,28 +20,23 @@ final class GitHubRequestUtils {
     enum Type {
         GET, PATCH;
 
+        private static final sun.misc.Unsafe U;
+
+        private static final long OFFSET;
+
         static {
             try {
                 Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
                 unsafeField.setAccessible(true);
-                sun.misc.Unsafe u = (sun.misc.Unsafe) unsafeField.get(null);
-
-                HttpURLConnection.setFollowRedirects(true);
-
-                Field methodsField = HttpURLConnection.class.getDeclaredField("methods");
-                Object base = u.staticFieldBase(methodsField);
-                long offset = u.staticFieldOffset(methodsField);
-
-                String[] methods1 = (String[]) u.getObject(base, offset);
-                int l = methods1.length;
-                String[] methods2 = new String[l + 1];
-                System.arraycopy(methods1, 0, methods2, 0, l);
-                methods2[l] = "PATCH";
-
-                u.putObject(base, offset, methods2);
+                U = (sun.misc.Unsafe) unsafeField.get(null);
+                OFFSET = U.objectFieldOffset(HttpURLConnection.class.getDeclaredField("method"));
             } catch (Throwable e) {
                 throw new AssertionError("Cannot hack HttpURLConnection.", e);
             }
+        }
+
+        public void apply(HttpURLConnection connection) {
+            U.putObject(connection, OFFSET, name());
         }
     }
 
@@ -83,7 +78,7 @@ final class GitHubRequestUtils {
 
     private static HttpURLConnection buildConnection(GitHubAPI apiHandle, Type type, String url) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestMethod(type.name());
+        type.apply(connection);
         connection.setRequestProperty("Accept", "application/vnd.github+json");
         connection.setRequestProperty("Authorization", apiHandle.token);
         connection.setRequestProperty("X-GitHub-Api-Version", "2022-11-28");

@@ -12,6 +12,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.compileJava {
+    options.compilerArgs.add("-Xlint:all")
+}
+
 checkstyle {
     sourceSets = mutableSetOf()
 }

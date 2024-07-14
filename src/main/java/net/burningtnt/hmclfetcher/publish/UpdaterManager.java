@@ -63,7 +63,7 @@ public final class UpdaterManager {
 
             try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new BufferedInputStream(apiHandle.getArtifactData(artifact)))) {
                 ZipArchiveEntry entry;
-                while ((entry = zis.getNextZipEntry()) != null) {
+                while ((entry = zis.getNextEntry()) != null) {
                     String entryPath = entry.getName();
                     if (entryPath.endsWith(".sha1")) {
                         ArchiveFile archiveFile = ARCHIVE_FILES.get(FileUtils.getFileExtension(entryPath.substring(0, entryPath.length() - 5)));

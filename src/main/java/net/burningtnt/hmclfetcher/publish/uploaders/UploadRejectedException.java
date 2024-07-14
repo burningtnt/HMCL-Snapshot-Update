@@ -1,6 +1,11 @@
 package net.burningtnt.hmclfetcher.publish.uploaders;
 
+import java.io.Serial;
+
 public class UploadRejectedException extends Exception {
+    @Serial
+    private static final long serialVersionUID = -33875993124229948L;
+
     public UploadRejectedException() {
     }
 
