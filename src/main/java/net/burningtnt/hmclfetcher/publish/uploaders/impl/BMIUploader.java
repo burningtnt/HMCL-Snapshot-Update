@@ -12,8 +12,8 @@ import java.nio.file.Path;
 public final class BMIUploader implements IUploader {
     private final String uploaderType;
 
-    public BMIUploader(String uploaderId) {
-        this.uploaderId = uploaderId;
+    public BMIUploader(String uploaderType) {
+        this.uploaderType = uploaderType;
     }
 
     @Override
