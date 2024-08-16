@@ -2,7 +2,7 @@ package net.burningtnt.hmclfetcher.publish.uploaders;
 
 import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
-import net.burningtnt.hmclfetcher.publish.uploaders.impl.EMIUploader;
+import net.burningtnt.hmclfetcher.publish.uploaders.impl.BMIUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.GitHubPagesLocalUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.GitHubRepositoryLocalUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.ProxiedLocalUploader;
@@ -25,7 +25,9 @@ public interface IUploader {
             int i = proxy.indexOf('=');
             uploader.add(new ProxiedLocalUploader(storage, proxy.substring(i + 1), proxy.substring(0, i)));
         }
-        uploader.add(new EMIUploader());
+        uploader.add(new BMIUploader("139"));
+        uploader.add(new BMIUploader("189"));
+        uploader.add(new BMIUploader("Woo"));
         return uploader;
     }
 }
