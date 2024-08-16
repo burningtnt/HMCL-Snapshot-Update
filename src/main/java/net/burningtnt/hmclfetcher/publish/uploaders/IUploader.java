@@ -27,7 +27,9 @@ public interface IUploader {
             int i = proxy.indexOf('=');
             uploader.add(new ProxiedLocalUploader(storage, proxy.substring(i + 1), proxy.substring(0, i)));
         }
-        uploader.add(new EMIUploader());
+        uploader.add(new BMIUploader139());
+        uploader.add(new BMIUploader189());
+        uploader.add(new BMIUploaderWoo());
         return uploader;
     }
 }
