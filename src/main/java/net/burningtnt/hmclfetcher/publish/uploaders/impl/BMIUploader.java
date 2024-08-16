@@ -9,8 +9,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-public final class EMIUploader implements IUploader {
-    public EMIUploader() {
+public final class BMIUploader implements IUploader {
+    private final String uploaderType;
+
+    public BMIUploader(String uploaderId) {
+        this.uploaderId = uploaderId;
     }
 
     @Override
@@ -22,13 +25,13 @@ public final class EMIUploader implements IUploader {
 
             @Override
             public URI getResult() throws URISyntaxException {
-                return new URI("https://alist.8mi.tech/d/HMCL/139/" + info.getFileHash() + '/' + info.getFileName());
+                return new URI("https://alist.8mi.tech/d/HMCL/" + uploaderType + "/" + info.getFileHash() + '/' + info.getFileName());
             }
         };
     }
 
     @Override
     public String getUploaderID() {
-        return "8mi.139";
+        return "8mi." + uploaderType;
     }
 }
