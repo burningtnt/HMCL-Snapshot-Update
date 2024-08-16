@@ -9,8 +9,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-public final class BMIUploadWoo implements IUploader {
-    public BMIUploadWoo() {
+public final class BMIUploaderWoo implements IUploader {
+    public BMIUploaderWoo() {
     }
 
     @Override
