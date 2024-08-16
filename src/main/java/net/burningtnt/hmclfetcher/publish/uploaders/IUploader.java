@@ -2,7 +2,9 @@ package net.burningtnt.hmclfetcher.publish.uploaders;
 
 import net.burningtnt.hmclfetcher.publish.structure.ArchiveFile;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
-import net.burningtnt.hmclfetcher.publish.uploaders.impl.EMIUploader;
+import net.burningtnt.hmclfetcher.publish.uploaders.impl.BMIUploader139;
+import net.burningtnt.hmclfetcher.publish.uploaders.impl.BMIUploader189;
+import net.burningtnt.hmclfetcher.publish.uploaders.impl.BMIUploaderWoo;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.GitHubPagesLocalUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.GitHubRepositoryLocalUploader;
 import net.burningtnt.hmclfetcher.publish.uploaders.impl.local.ProxiedLocalUploader;
