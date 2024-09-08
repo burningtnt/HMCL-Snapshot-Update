@@ -12,6 +12,8 @@ import net.burningtnt.hmclfetcher.api.structure.workflow.artifacts.GitHubArtifac
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -64,9 +66,10 @@ public final class GitHubAPI {
     }
 
     public GitHubCommitsCompare compareCommits(String baseOwner, String baseRepository, String baseCommit, String headOwner, String headRepository, String headCommit) throws IOException {
-        return GitHubRequestUtils.ofStructuredResult(
-                this, GitHubRequestUtils.Type.GET, String.format("https://api.github.com/repos/%s/%s/compare/%s...%s:%s:%s", baseOwner, baseRepository, baseCommit, headOwner, headRepository, headCommit),
-                GitHubCommitsCompare.class
-        );
+        return GitHubRequestUtils.ofStructuredResult(this, GitHubRequestUtils.Type.GET, String.format(
+                "https://api.github.com/repos/%s/%s/compare/%s...%s:%s:%s",
+                baseOwner, baseRepository, URLEncoder.encode(baseCommit, StandardCharsets.UTF_8),
+                headOwner, headRepository, URLEncoder.encode(headCommit, StandardCharsets.UTF_8)
+        ), GitHubCommitsCompare.class);
     }
 }
