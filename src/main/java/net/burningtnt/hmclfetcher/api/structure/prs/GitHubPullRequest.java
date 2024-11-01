@@ -3,7 +3,7 @@ package net.burningtnt.hmclfetcher.api.structure.prs;
 import com.google.gson.annotations.SerializedName;
 
 public final class GitHubPullRequest {
-    private final int id;
+    private final long id;
 
     private final int number;
 
@@ -18,7 +18,7 @@ public final class GitHubPullRequest {
 
     private final GitHubPullRequestReference head;
 
-    private GitHubPullRequest(int id, int number, String title, boolean draft, GitHubPullRequestReference base, GitHubPullRequestReference head, String htmlURL) {
+    private GitHubPullRequest(long id, int number, String title, boolean draft, GitHubPullRequestReference base, GitHubPullRequestReference head, String htmlURL) {
         this.id = id;
         this.number = number;
         this.title = title;
@@ -28,7 +28,7 @@ public final class GitHubPullRequest {
         this.htmlURL = htmlURL;
     }
 
-    public int getID() {
+    public long getID() {
         return id;
     }
 
