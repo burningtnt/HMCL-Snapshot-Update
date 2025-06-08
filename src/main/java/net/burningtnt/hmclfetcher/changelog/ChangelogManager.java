@@ -67,7 +67,7 @@ public final class ChangelogManager {
                 p2.append('\n');
             }
 
-            p3.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": `").append(pull.getTitle()).append("`\n");
+            p3.append("[#").append(pull.getNumber()).append("](").append(pull.getHtmlURL()).append(") ").append(state).append(": ").append(pull.getTitle()).append("\n");
         }
 
         StringWriter result = new StringWriter();

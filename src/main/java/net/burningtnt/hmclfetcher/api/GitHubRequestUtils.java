@@ -2,11 +2,19 @@ package net.burningtnt.hmclfetcher.api;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import net.burningtnt.hmclfetcher.utils.TrustedLookup;
 
-import java.io.*;
-import java.lang.reflect.Field;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.invoke.VarHandle;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -20,23 +28,18 @@ final class GitHubRequestUtils {
     enum Type {
         GET, PATCH;
 
-        private static final sun.misc.Unsafe U;
-
-        private static final long OFFSET;
+        private static final VarHandle METHOD;
 
         static {
             try {
-                Field unsafeField = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-                unsafeField.setAccessible(true);
-                U = (sun.misc.Unsafe) unsafeField.get(null);
-                OFFSET = U.objectFieldOffset(HttpURLConnection.class.getDeclaredField("method"));
-            } catch (Throwable e) {
-                throw new AssertionError("Cannot hack HttpURLConnection.", e);
+                METHOD = TrustedLookup.getInstance().findVarHandle(HttpURLConnection.class, "method", String.class).withInvokeExactBehavior();
+            } catch (ReflectiveOperationException e) {
+                throw new ExceptionInInitializerError(e);
             }
         }
 
         public void apply(HttpURLConnection connection) {
-            U.putObject(connection, OFFSET, name());
+            METHOD.set(connection, name());
         }
     }
 
@@ -77,7 +80,13 @@ final class GitHubRequestUtils {
     }
 
     private static HttpURLConnection buildConnection(GitHubAPI apiHandle, Type type, String url) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) new URI(url).toURL().openConnection();
+        } catch (URISyntaxException e) {
+            throw new IOException(e);
+        }
+
         type.apply(connection);
         connection.setRequestProperty("Accept", "application/vnd.github+json");
         connection.setRequestProperty("Authorization", apiHandle.token);
