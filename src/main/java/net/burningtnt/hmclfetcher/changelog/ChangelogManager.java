@@ -8,6 +8,7 @@ import net.burningtnt.hmclfetcher.api.structure.prs.GitHubPullRequestReference;
 import net.burningtnt.hmclfetcher.api.structure.repo.GitHubRepository;
 import net.burningtnt.hmclfetcher.publish.structure.SourceBranch;
 
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -22,7 +23,7 @@ public final class ChangelogManager {
 
     private static final SourceBranch PRC_SOURCE = new SourceBranch("burningtnt", "HMCL", "prs", null);
 
-    private static final String M_DRAFT = "\uD83D\uDFE5", M_NOT_MERGED = "\uD83D\uDFE8", M_PARTLY_MERGED = "\uD83D\uDFE6", M_MERGED = "\uD83D\uDFE9";
+    private static final String M_DRAFT = "\uD83D\uDFE5", M_NOT_MERGED = "\uD83D\uDFE8", M_PARTLY_MERGED = "\uD83D\uDFE6", M_MERGED = "\uD83D\uDFE9", M_404 = "\uD83D\uDCA5";
 
     public static void execute(GitHubAPI apiHandle) throws Exception {
         StringBuilder p2 = new StringBuilder();
@@ -37,28 +38,32 @@ public final class ChangelogManager {
             GitHubPullRequestReference head = pull.getHead();
             GitHubRepository headRepo = head.getRepository();
 
-            GitHubCommitsCompare c2 = apiHandle.compareCommits(
-                    PRC_SOURCE.owner(), PRC_SOURCE.repository(), PRC_SOURCE.branch(),
-                    headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
-            );
-
-            if (c2.getAheadByCount() == 0) {
-                state = M_MERGED;
-            } else {
-                GitHubCommitsCompare c1 = apiHandle.compareCommits(
-                        OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch(),
+            try {
+                GitHubCommitsCompare c2 = apiHandle.compareCommits(
+                        PRC_SOURCE.owner(), PRC_SOURCE.repository(), PRC_SOURCE.branch(),
                         headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
                 );
 
-                if (c1.getAheadByCount() == c2.getAheadByCount()) {
-                    if (pull.isDraft()) {
-                        state = M_DRAFT;
-                    } else {
-                        state = M_NOT_MERGED;
-                    }
+                if (c2.getAheadByCount() == 0) {
+                    state = M_MERGED;
                 } else {
-                    state = M_PARTLY_MERGED;
+                    GitHubCommitsCompare c1 = apiHandle.compareCommits(
+                            OFFICIAL_SOURCE.owner(), OFFICIAL_SOURCE.repository(), OFFICIAL_SOURCE.branch(),
+                            headRepo.getOwner().getLogin(), headRepo.getName(), head.getReference()
+                    );
+
+                    if (c1.getAheadByCount() == c2.getAheadByCount()) {
+                        if (pull.isDraft()) {
+                            state = M_DRAFT;
+                        } else {
+                            state = M_NOT_MERGED;
+                        }
+                    } else {
+                        state = M_PARTLY_MERGED;
+                    }
                 }
+            } catch (FileNotFoundException e) {
+                state = M_404;
             }
 
             p2.append(state);
