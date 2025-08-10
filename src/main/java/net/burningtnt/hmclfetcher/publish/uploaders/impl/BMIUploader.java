@@ -9,8 +9,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 
-public final class EMIUploader implements IUploader {
-    public EMIUploader() {
+public final class BMIUploader implements IUploader {
+    public BMIUploader() {
     }
 
     @Override
