@@ -29,6 +29,6 @@ public final class EMIUploader implements IUploader {
 
     @Override
     public String getUploaderID() {
-        return "8mi.auto";
+        return "8mi.139";
     }
 }
