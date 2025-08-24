@@ -22,13 +22,13 @@ public final class EMIUploader implements IUploader {
 
             @Override
             public URI getResult() throws URISyntaxException {
-                return new URI("https://alist.8mi.tech/d/mirror/HMCL/Auto/" + info.getFileHash() + '/' + info.getFileName());
+                return new URI("https://alist.8mi.tech/d/mirror/HMCL-Snapshot/Auto/" + info.getFileHash() + '/' + info.getFileName());
             }
         };
     }
 
     @Override
     public String getUploaderID() {
-        return "8mi.139";
+        return "8mi.auto";
     }
 }
