@@ -28,9 +28,9 @@ public final class FileUtils {
         Files.createDirectories(directory);
     }
 
-    public static String getFileExtension(String fileName) {
-        int index = fileName.lastIndexOf('.');
-        return index == -1 ? fileName : fileName.substring(index + 1);
+    public static String subStringAfterLast(String value, int cp) {
+        int index = value.lastIndexOf(cp);
+        return index == -1 ? value : value.substring(index + 1);
     }
 
     public static Path ensureFileExist(Path path) throws IOException {

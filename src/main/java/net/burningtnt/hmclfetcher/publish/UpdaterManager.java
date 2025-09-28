@@ -14,6 +14,7 @@ import net.burningtnt.hmclfetcher.publish.uploaders.UploadRejectedException;
 import net.burningtnt.hmclfetcher.utils.FileUtils;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.net.URI;
@@ -21,7 +22,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.security.MessageDigest;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -32,7 +35,7 @@ public final class UpdaterManager {
     }
 
     private static final SourceBranch[] GITHUB_BRANCHES = {
-            new SourceBranch("HMCL-dev", "HMCL", "javafx", "gradle.yml"),
+//            new SourceBranch("HMCL-dev", "HMCL", "javafx", "gradle.yml"),
             new SourceBranch("HMCL-dev", "HMCL", "main", "gradle.yml"),
             new SourceBranch("burningtnt", "HMCL", "prs", "gradle.yml")
     };
@@ -44,7 +47,7 @@ public final class UpdaterManager {
         Path ARTIFACT_ROOT = Path.of("artifacts/" + CURRENT_BRANCH).toAbsolutePath();
         Path FILES_ROOT = ARTIFACT_ROOT.resolve("files");
         Path UPLOADER_ROOT = ARTIFACT_ROOT.resolve("uploaders");
-        Map<String, ArchiveFile> ARCHIVE_FILES = ArchiveFile.of("exe", "jar");
+        Map<String, ArchiveFile> ARCHIVE_FILES = ArchiveFile.of("exe", "jar", "sh");
 
         FileUtils.ensureDirectoryClear(ARTIFACT_ROOT);
 
@@ -59,28 +62,46 @@ public final class UpdaterManager {
                 break;
             }
 
-            GitHubArtifact artifact = artifacts[0];
-            try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(apiHandle.getArtifactData(artifact)))) {
-                ZipEntry entry;
-                while ((entry = zis.getNextEntry()) != null) {
-                    String entryPath = entry.getName();
-                    if (entryPath.endsWith(".sha1")) {
-                        ArchiveFile archiveFile = ARCHIVE_FILES.get(FileUtils.getFileExtension(entryPath.substring(0, entryPath.length() - 5)));
-                        if (archiveFile != null) {
-                            archiveFile.setFileHash(new String(zis.readNBytes(40)));
-                        }
-                    } else {
-                        ArchiveFile archiveFile = ARCHIVE_FILES.get(FileUtils.getFileExtension(entryPath));
-                        if (archiveFile != null) {
-                            String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
-                            archiveFile.setFileName(fileName);
+            for (GitHubArtifact artifact : artifacts) {
+                try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(apiHandle.getArtifactData(artifact)))) {
+                    ZipEntry entry = zis.getNextEntry();
+                    if (entry == null) {
+                        throw new IllegalArgumentException(String.format("Cannot handle action artifact: Cannot locate artifact in '%s'.", artifact.getName()));
+                    }
+                    if (entry.getName().endsWith(".sha256")) {
+                        continue;
+                    }
 
-                            Path target = Files.createTempFile("hmcl-fetcher-", '.' + archiveFile.getExtension());
-                            try (OutputStream os = Files.newOutputStream(target)) {
-                                zis.transferTo(os);
+                    ArchiveFile file = ARCHIVE_FILES.get(FileUtils.subStringAfterLast(entry.getName(), '.'));
+                    if (file != null) {
+                        MessageDigest digest = MessageDigest.getInstance("SHA1");
+                        Path target = Files.createTempFile("hmcl-fetcher-", '.' + file.getExtension());
+                        try (OutputStream os = new OutputStream() {
+                            private final OutputStream delegate = Files.newOutputStream(target);
+
+                            @Override
+                            public void write(int b) throws IOException {
+                                delegate.write(b);
+                                digest.update((byte) b);
                             }
-                            files.put(archiveFile, target);
+
+                            @Override
+                            public void write(byte[] b, int off, int len) throws IOException {
+                                delegate.write(b, off, len);
+                                digest.update(b, off, len);
+                            }
+
+                            @Override
+                            public void close() throws IOException {
+                                delegate.close();
+                            }
+                        }) {
+                            zis.transferTo(os);
                         }
+
+                        file.setFileName(FileUtils.subStringAfterLast(entry.getName(), '/'));
+                        file.setFileHash(HexFormat.of().formatHex(digest.digest()));
+                        files.put(file, target);
                     }
                 }
             }
